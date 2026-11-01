@@ -59,8 +59,8 @@ top = top.rename(columns={
     'COD3': 'Código',
     'CAUSA3': 'Causa'
 })
- tabla=dash_table.DataTable(data=top.fillna('Sin descripción').to_dict('records'),columns=[{'name':v,'id':v} for v in ['Código','Causa','Total']],style_table={'overflowX':'auto'},style_cell={'textAlign':'left','padding':'10px','whiteSpace':'normal','height':'auto'},style_header={'backgroundColor':'#e8f2f5','fontWeight':'bold'},style_data_conditional=[{'if':{'row_index':'odd'},'backgroundColor':'#f7f9fb'}])
- grouped=d.groupby(['DEPARTAMENTO','SEXO_LABEL']).size().reset_index(name='Defunciones')
+tabla=dash_table.DataTable(data=top.fillna('Sin descripción').to_dict('records'),columns=[{'name':v,'id':v} for v in ['Código','Causa','Total']],style_table={'overflowX':'auto'},style_cell={'textAlign':'left','padding':'10px','whiteSpace':'normal','height':'auto'},style_header={'backgroundColor':'#e8f2f5','fontWeight':'bold'},style_data_conditional=[{'if':{'row_index':'odd'},'backgroundColor':'#f7f9fb'}])
+grouped=d.groupby(['DEPARTAMENTO','SEXO_LABEL']).size().reset_index(name='Defunciones')
  sexfig=px.bar(grouped,x='DEPARTAMENTO',y='Defunciones',color='SEXO_LABEL',barmode='stack',template='plotly_white',color_discrete_sequence=COLORS)
  sexfig.update_layout(xaxis_tickangle=-60,legend_title_text='Sexo')
  ages=d.groupby('EDAD_CATEGORIA').size().reindex(EDADES,fill_value=0).reset_index(name='Defunciones')
