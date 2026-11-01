@@ -13,7 +13,8 @@ COLORS=['#12476a','#2c91a2','#d4a246','#8d77a9']
 app=Dash(__name__,title='Mortalidad Colombia 2019')
 server=app.server
 
-def card(child):return html.Section(child,className='card')
+def card(child, className='card'):
+    return html.Section(child, className=className)
 def graph(title,id,description):return card([html.H2(title),dcc.Graph(id=id,config={'displaylogo':False}),html.P(description,className='note')])
 app.layout=html.Div(className='container',children=[
  html.Header([html.P('OBSERVATORIO INTERACTIVO · FUENTE DANE',className='eyebrow'),html.H1('Mortalidad en Colombia | 2019'),html.P('Análisis territorial, temporal, demográfico y por causas de defunción no fetal.')]),
