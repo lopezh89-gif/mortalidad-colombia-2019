@@ -1,6 +1,7 @@
 from pathlib import Path
 import pandas as pd
 import plotly.express as px
+from mapa_departamentos import construir_mapa
 from dash import Dash, html, dcc, Input, Output, dash_table
 
 ROOT=Path(__file__).resolve().parent
@@ -35,11 +36,7 @@ def actualizar(dep,sexo,mes):
  if mes!='ALL':d=d[d.MES.eq(mes)]
  total=len(d);locs=d.COD_DANE.nunique();causas=d.COD3.nunique()
  k=[html.Div([html.Small(label),html.Strong(f'{n:,}'.replace(',','.'))],className='kpi') for label,n in [('Defunciones',total),('Municipios registrados',locs),('Causas CIE-10',causas)]]
- bydep=d.groupby('DEPARTAMENTO',dropna=False).agg(Muertes=('COD_DANE','size'),LAT=('LAT','mean'),LONG=('LONG','mean')).reset_index().dropna(subset=['LAT','LONG'])
- if len(bydep):
-  mapa=px.scatter_map(bydep,lat='LAT',lon='LONG',size='Muertes',hover_name='DEPARTAMENTO',hover_data={'LAT':False,'LONG':False},color='Muertes',color_continuous_scale='Blues',zoom=3.9,center={'lat':4.5,'lon':-73.8},height=490,size_max=38)
-  mapa.update_layout(map_style='carto-positron',margin=dict(t=5,b=5,l=0,r=0))
- else:mapa=px.scatter(title='Sin datos para los filtros seleccionados')
+ mapa = construir_mapa(d)  
  monthly=d.groupby('MES').size().reindex(range(1,13),fill_value=0).reset_index(name='Defunciones');monthly['Mes']=monthly.MES.map(MESES)
  lineas=px.line(monthly,x='Mes',y='Defunciones',markers=True,template='plotly_white',color_discrete_sequence=COLORS)
  hx=d[d.COD3.eq('X95')].groupby(['COD_DANE','MUNICIPIO','DEPARTAMENTO']).size().nlargest(5).reset_index(name='Casos')
