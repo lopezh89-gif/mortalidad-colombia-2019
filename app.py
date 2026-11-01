@@ -45,7 +45,20 @@ def actualizar(dep,sexo,mes):
  municipios=d.groupby(['COD_DANE','MUNICIPIO','DEPARTAMENTO']).size().nsmallest(10).reset_index(name='Defunciones')
  municipios['Lugar']=municipios.MUNICIPIO+' · '+municipios.DEPARTAMENTO
  menor=px.pie(municipios,names='Lugar',values='Defunciones',hole=.32)
- top=d.groupby(['COD3','CAUSA3'],dropna=False).size().nlargest(10).reset_index(name='Total');top=top.rename(columns={'COD3':'Código','CAUSA3':'Causa'})
+ top = (
+    d.groupby(['COD3', 'CAUSA3'], dropna=False)
+    .size()
+    .reset_index(name='Total')
+)
+
+top = top.sort_values(
+    'Total', ascending=False
+).head(10)
+
+top = top.rename(columns={
+    'COD3': 'Código',
+    'CAUSA3': 'Causa'
+})
  tabla=dash_table.DataTable(data=top.fillna('Sin descripción').to_dict('records'),columns=[{'name':v,'id':v} for v in ['Código','Causa','Total']],style_table={'overflowX':'auto'},style_cell={'textAlign':'left','padding':'10px','whiteSpace':'normal','height':'auto'},style_header={'backgroundColor':'#e8f2f5','fontWeight':'bold'},style_data_conditional=[{'if':{'row_index':'odd'},'backgroundColor':'#f7f9fb'}])
  grouped=d.groupby(['DEPARTAMENTO','SEXO_LABEL']).size().reset_index(name='Defunciones')
  sexfig=px.bar(grouped,x='DEPARTAMENTO',y='Defunciones',color='SEXO_LABEL',barmode='stack',template='plotly_white',color_discrete_sequence=COLORS)
